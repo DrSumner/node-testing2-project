@@ -1,7 +1,7 @@
 const express = require('express')
 const data = require('./data-model')
 const router = express.Router()
-const {checkId} = require('./data-middleware')
+const {checkId, validateBody, nameCheck} = require('./data-middleware')
 
 router.get('/', (req,res,next) => {
 data.getAll()
@@ -9,8 +9,14 @@ data.getAll()
 .catch(next)
 })
 
-router.get("/:id", checkId, (req,res,next) => {
+router.get("/:id", checkId, (req,res) => {
     res.json(req.data)
+})
+
+router.post('/', validateBody, nameCheck, (req,res,next) => {
+    data.create(req.body)
+    .then( data => res.status(201).json(data))
+    .catch(next)
 })
 
 router.use((err,req,res,next) => { // eslint-disable-line

@@ -37,4 +37,18 @@ beforeEach(async () => {
             expect(res.body.message).toMatch(/invalid id/i)
         })
     })
+    describe('[POST] /api/data', () => {
+        it('[4] correctly post db', async () => {
+            const data = {name:'Cammie', age:20}
+            const res = await request(server).post('/api/data').send(data)
+            expect(res.body).toStrictEqual({id:4, name:'Cammie', age:20})
+            expect(res.status).toEqual(201)
+        })
+        it('[5] posting incorrect values results in correct err', async () =>{
+            const data = {name: 45, age: 54}
+            const res = await request(server).post('/api/data').send(data)
+            expect(res.body.message).toMatch(/invalid name/i)
+            expect(res.status).toEqual(401)
+        })
+    })
   })
