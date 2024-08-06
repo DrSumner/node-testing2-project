@@ -20,9 +20,21 @@ beforeEach(async () => {
 
   describe('server.js', () => {
     describe('[GET] /api/data', () => {
-        it(' [1] gets the data', async () => {
+        it(' [1] gets all the data', async () => {
             const res = await request(server).get('/api/data')
-            expect(res.body.message).toBeDefined()
+            expect(res.body).toBeDefined()
+        })
+        it(' [2] get by id', async () => {
+            const res = await request(server).get('/api/data/1')
+            expect(res.body).toStrictEqual({
+                "id": 1,
+                "name": "Bob",
+                "age": 44
+            })
+        })
+        it(' [3] correct error on non existing id', async () => {
+            const res = await request(server).get('/api/data/111')
+            expect(res.body.message).toMatch(/invalid id/i)
         })
     })
   })
