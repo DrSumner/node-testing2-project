@@ -27,6 +27,9 @@ const validateBody = (req,res,next) => {
     if(age && typeof age !== 'number'){
        return res.status(401).json({message: 'age must be a number'})
     }
+    if(age < 0 || age > 130 ){
+        return res.status(401).json({message: 'age is impossible'})
+    }
     next()
 }
 
@@ -35,7 +38,7 @@ const nameCheck = (req,res,next) => {
     data.getByFilter(name)
     .then( data => {
         if(data) {
-            return res.status(401).json({message: "name already taken"})
+            return res.status(401).json({message: "name is already taken"})
         }
         else next()
     })

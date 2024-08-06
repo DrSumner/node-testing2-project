@@ -24,7 +24,7 @@ beforeEach(async () => {
             const res = await request(server).get('/api/data')
             expect(res.body).toBeDefined()
         })
-        it(' [2] get by id', async () => {
+        it(' [2] gets correct data with getById', async () => {
             const res = await request(server).get('/api/data/1')
             expect(res.body).toStrictEqual({
                 "id": 1,
@@ -44,10 +44,40 @@ beforeEach(async () => {
             expect(res.body).toStrictEqual({id:4, name:'Cammie', age:20})
             expect(res.status).toEqual(201)
         })
-        it('[5] posting incorrect values results in correct err', async () =>{
+        it('[5] posting incorrect name results in correct err', async () =>{
             const data = {name: 45, age: 54}
             const res = await request(server).post('/api/data').send(data)
             expect(res.body.message).toMatch(/invalid name/i)
+            expect(res.status).toEqual(401)
+        })
+        it('[6] posting no name results in correct err', async () =>{
+            const data = { age: 54}
+            const res = await request(server).post('/api/data').send(data)
+            expect(res.body.message).toMatch(/name is required/i)
+            expect(res.status).toEqual(401)
+        })
+        it('[7] posting incorrect age results in correct err ', async () => {
+            const data = {name: "Bobby", age: "54"}
+            const res = await request(server).post('/api/data').send(data)
+            expect(res.body.message).toMatch(/age must be a number/i)
+            expect(res.status).toEqual(401)
+        })
+        it('[8] posting no age results in correct err ', async () => {
+            const data = {name: "Bobby"}
+            const res = await request(server).post('/api/data').send(data)
+            expect(res.body.message).toMatch(/age is required/i)
+            expect(res.status).toEqual(401)
+        })
+        it('[9] posting impossible age results in correct err ', async () => {
+            const data = {name: "Bobby", age: -12}
+            const res = await request(server).post('/api/data').send(data)
+            expect(res.body.message).toMatch(/age is impossible/i)
+            expect(res.status).toEqual(401)
+        })
+        it('[10] posting a non-unique name results in correct err', async () => {
+            const data = {name:"Bob" , age: 44}
+            const res = await request(server).post('/api/data').send(data)
+            expect(res.body.message).toMatch(/name is already taken/i)
             expect(res.status).toEqual(401)
         })
     })
